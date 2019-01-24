@@ -11,6 +11,17 @@ The project has [detailed
 documentation](https://uisautomation.github.io/lecture-capture-preferences-webapp/)
 for developers, including a "getting started" guide.
 
+## Useful developer links
+
+When a development environment is created via ``./compose.sh development up``,
+the following endpoints are available:
+
+* http://localhost:8000/ - the web application itself.
+* http://localhost:7000/ - a Swagger UI instance configured to point to the
+    application's REST-ful API.
+* http://localhost:6060/ - live generated documentation for the React components
+    which form part of the UI.
+
 ## Developer quickstart
 
 Firstly, [install docker-compose](https://docs.docker.com/compose/install/).
