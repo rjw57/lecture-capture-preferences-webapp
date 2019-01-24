@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'ucamlookup',
 
     'preferences',
+    'ui',
 ]
 
 #: Installed middleware
@@ -55,11 +56,17 @@ MIDDLEWARE = [
 #: Root URL patterns
 ROOT_URLCONF = 'project.urls'
 
+# Serve the frontend files from the application root.
+FRONTEND_APP_BUILD_DIR = os.environ.get(
+    'DJANGO_FRONTEND_APP_BUILD_DIR',
+    os.path.abspath(os.path.join(BASE_DIR, 'ui', 'frontend', 'build'))
+)
+
 #: Template loading
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [FRONTEND_APP_BUILD_DIR],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -194,3 +201,11 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATIC_ROOT = os.environ.get('DJANGO_STATIC_ROOT', os.path.join(BASE_DIR, 'build', 'static'))
+
+# If the build directory for the frontend actually exists, serve files for the root of the
+# application from it. Print a warning otherwise.
+if os.path.isdir(FRONTEND_APP_BUILD_DIR):
+    WHITENOISE_ROOT = FRONTEND_APP_BUILD_DIR
+else:
+    print('Warning: FRONTEND_APP_BUILD_DIR does not exist. The frontend will not be served',
+          file=sys.stderr)

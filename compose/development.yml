@@ -25,6 +25,7 @@ services:
     depends_on:
       - "preferences-db"
       - "mailhog"
+      - "frontend_watch"
 
     # Options stdin_open and tty are set to allow you to attach to the container for the purposes
     # of debugging.
@@ -43,6 +44,58 @@ services:
       - type: volume
         source: pudb-config
         target: /root/.config/pudb
+      - "frontend_build:/tmp/frontend_build"
+
+    environment:
+      DJANGO_FRONTEND_APP_BUILD_DIR: "/tmp/frontend_build"
+
+  # Front end which is continually re-build using webpack's watch support. Used
+  # to provide an updated source of files for the Django app.
+  frontend_watch:
+    build:
+      context: ..
+      dockerfile: ./compose/development.frontend.Dockerfile
+
+    volumes:
+      # For the frontend, mount the local frontend directories inside the container
+      # as a volume to allow local changes to be reflected without having to
+      # re-build the container.
+      - type: bind
+        source: ../ui/frontend/src
+        target: /usr/src/app/src
+        read_only: true
+      - type: bind
+        source: ../ui/frontend/public
+        target: /usr/src/app/public
+        read_only: true
+      - "frontend_build:/tmp/frontend_build"
+    command: ["run", "watch"]
+    environment:
+      APP_BUILD: "/tmp/frontend_build"
+
+  # Front end live documentation
+  frontend_styleguidist:
+    build:
+      context: ..
+      dockerfile: ./compose/development.frontend.Dockerfile
+
+    volumes:
+      # For the frontend, mount the local frontend directory inside the container
+      # as a volume to allow local changes to be reflected without having to
+      # re-build the container.
+      - type: bind
+        source: ../ui/frontend/src
+        target: /usr/src/app/src
+        read_only: true
+      - type: bind
+        source: ../ui/frontend/public
+        target: /usr/src/app/public
+        read_only: true
+    expose:
+      - "6060"
+    ports:
+      - "6060:6060"
+    command: ["run", "styleguidist-server"]
 
   # Swagger
   swagger:
@@ -59,3 +112,4 @@ services:
 volumes:
   # A persistent volume to preserve the pudb configuration.
   pudb-config:
+  frontend_build:

@@ -57,6 +57,8 @@ urlpatterns = [
     re_path(
         r'^api/swagger(?P<format>\.json|\.yaml)$',
         schema_view.without_ui(cache_timeout=None), name='schema-json'),
+
+    path('', include('ui.urls', namespace='ui')),
 ]
 
 # Selectively enable django debug toolbar URLs. Only if the toolbar is
