@@ -16,7 +16,10 @@ Including another URLconf
 from django.conf import settings
 from django.contrib import admin
 from django.http import HttpResponse
-from django.urls import path, include
+from django.urls import path, include, re_path
+from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
+from rest_framework import permissions
 
 import automationcommon.views
 
@@ -26,6 +29,19 @@ try:
     HAVE_DDT = True
 except ImportError:
     HAVE_DDT = False
+
+schema_view = get_schema_view(
+   openapi.Info(
+      title='Preferences API',
+      default_version='v1',
+      description='Lecture Capture Preferences API',
+      contact=openapi.Contact(email='automation@uis.cam.ac.uk'),
+      license=openapi.License(name='MIT License'),
+   ),
+   public=True,
+   permission_classes=(permissions.AllowAny,),
+   urlconf='project.urls',
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -37,6 +53,11 @@ urlpatterns = [
         namespace='preferences'
     )),
     path('', include('ui.urls', namespace='ui')),
+
+    # API documentation
+    re_path(
+        r'^api/swagger(?P<format>\.json|\.yaml)$',
+        schema_view.without_ui(cache_timeout=None), name='schema-json'),
 ]
 
 # Selectively enable django debug toolbar URLs. Only if the toolbar is
