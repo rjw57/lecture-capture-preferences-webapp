@@ -7,6 +7,12 @@ Installation
 Add the ``preferences`` application to your
 ``INSTALLED_APPS`` configuration as usual.
 
+Models
+``````
+
+.. automodule:: preferences.models
+    :members:
+
 Views and serializers
 `````````````````````
 
