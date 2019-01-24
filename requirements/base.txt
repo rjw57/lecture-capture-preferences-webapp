@@ -20,6 +20,9 @@ drf-yasg
 django-crispy-forms
 django-filter
 
+# Required for loading fixtures from YAML files
+PyYAML
+
 # For an improved manage.py shell experience
 ipython
 
