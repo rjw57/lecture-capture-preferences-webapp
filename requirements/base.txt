@@ -12,6 +12,13 @@ django-ucamwebauth>=1.4.5
 # configuration option.
 whitenoise>=4.0
 
+# API-related Django packages
+djangorestframework
+django-cors-headers
+drf-yasg
+django-crispy-forms
+django-filter
+
 # For an improved manage.py shell experience
 ipython
 
