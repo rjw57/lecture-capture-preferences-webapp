@@ -2,17 +2,23 @@
 Views for Lecture Capture Preferences
 
 """
+from rest_framework import generics
 
-import datetime
-from django.http import HttpResponse
+from . import serializers
 
 
-# Create your views here.
-def example(request):
+class ProfileView(generics.RetrieveAPIView):
     """
-    A simple example view which renders the current date and time.
+    Endpoint to retrieve the profile of the current user.
 
     """
-    now = datetime.datetime.now()
-    html = "<html><body>It is now %s.</body></html>" % now
-    return HttpResponse(html)
+    serializer_class = serializers.ProfileSerializer
+
+    def get_object(self):
+        """
+        Return an object representing what is known about a user from the request. The object can
+        be serialised with :py:class:`api.serializers.ProfileSerializer`.
+
+        """
+        obj = {'user': self.request.user}
+        return obj

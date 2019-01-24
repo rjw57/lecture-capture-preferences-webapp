@@ -48,10 +48,7 @@ urlpatterns = [
     path('', include('ucamwebauth.urls')),
     path('status', automationcommon.views.status, name='status'),
     path('healthz', lambda request: HttpResponse('ok', content_type="text/plain"), name='healthz'),
-    path('', include(
-        'preferences.urls',
-        namespace='preferences'
-    )),
+    path('api/', include('preferences.urls', namespace='preferences')),
 
     # lookup/ibis urls
     path('ucamlookup/', include('ucamlookup.urls')),

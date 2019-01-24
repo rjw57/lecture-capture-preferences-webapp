@@ -23,6 +23,9 @@ django-filter
 # configuration option.
 whitenoise>=4.0
 
+# Required for loading fixtures from YAML files
+PyYAML
+
 # For an improved manage.py shell experience
 ipython
 
