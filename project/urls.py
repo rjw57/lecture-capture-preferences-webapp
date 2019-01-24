@@ -36,6 +36,7 @@ urlpatterns = [
         'preferences.urls',
         namespace='preferences'
     )),
+    path('', include('ui.urls', namespace='ui')),
 ]
 
 # Selectively enable django debug toolbar URLs. Only if the toolbar is

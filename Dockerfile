@@ -1,3 +1,15 @@
+# Use node container to build frontend app
+FROM node:10 as frontend-builder
+
+# Do everything relative to /usr/src/app which is where we install our
+# application.
+WORKDIR /usr/src/app
+
+# Install packages and build frontend
+ADD ./ui/frontend/ ./
+RUN npm install && npm run build
+
+# Build webapp image
 FROM uisautomation/django:2.1-py3.7
 
 # Ensure packages are up to date and install some useful utilities
@@ -16,6 +28,7 @@ RUN pip install --no-cache-dir -r requirements/base.txt && \
 
 # Copy the remaining files over
 ADD . .
+COPY --from=frontend-builder /usr/src/app/build/ /usr/src/build/frontend/
 
 # Default environment for image.  By default, we use the settings module bundled
 # with this repo. Change DJANGO_SETTINGS_MODULE to install a custom settings.
@@ -26,6 +39,7 @@ ADD . .
 EXPOSE 8000
 ENV \
 	DJANGO_SETTINGS_MODULE=project.settings.docker \
+	DJANGO_FRONTEND_APP_BUILD_DIR=/usr/src/build/frontend/ \
 	PORT=8000
 
 # Use gunicorn as a web-server after running migration command
