@@ -10,6 +10,15 @@ their preferences for lecture capture.
 The project has detailed documentation for developers, including a "getting
 started" guide. See below for information on building the documentation.
 
+## Useful developer links
+
+When a development environment is created via ``./compose.sh development up``,
+the following endpoints are available:
+
+* http://localhost:8000/ - the web application itself.
+* http://localhost:7000/ - a Swagger UI instance configured to point to the
+    application's REST-ful API.
+
 ## Developer quickstart
 
 Firstly, [install docker-compose](https://docs.docker.com/compose/install/).
