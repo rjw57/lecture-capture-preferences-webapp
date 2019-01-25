@@ -1,4 +1,7 @@
+from django.utils import timezone
 from rest_framework import serializers
+
+from . import models
 
 
 class ProfileSerializer(serializers.Serializer):
@@ -31,10 +34,24 @@ class PreferenceSerializer(serializers.Serializer):
     A lecture capture preference.
 
     """
-    user = UserSerializer()
+    user = UserSerializer(read_only=True)
     allow_capture = serializers.BooleanField()
     request_hold = serializers.BooleanField()
-    expressed_at = serializers.DateTimeField()
+    expressed_at = serializers.DateTimeField(read_only=True)
+
+    def create(self, validated_data):
+        # Get current user trying to create preference
+        user = None
+        if self.context is not None and 'request' in self.context:
+            user = self.context['request'].user
+
+        # The anonymous user can never create a preference due to permissions. Assert this is the
+        # case
+        assert user is not None and not user.is_anonymous
+
+        return models.Preference.objects.create(
+            user=user, expressed_at=timezone.now(), **validated_data
+        )
 
 
 def _get_user_display_name(user):
