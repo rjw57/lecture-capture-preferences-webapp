@@ -8,3 +8,6 @@ django-debug-toolbar
 
 # docker compatible debugger
 pudb
+
+# URL processing within test suite
+furl

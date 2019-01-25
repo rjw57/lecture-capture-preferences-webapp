@@ -11,4 +11,6 @@ app_name = "preferences"
 
 urlpatterns = [
     path('profile/', views.ProfileView.as_view(), name='profile'),
+
+    path('preferences/', views.PreferenceListView.as_view(), name='preference_list'),
 ]
