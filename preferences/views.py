@@ -3,7 +3,7 @@ Views for Lecture Capture Preferences
 
 """
 from django_filters import rest_framework as df_filters
-from rest_framework import generics, pagination, filters
+from rest_framework import generics, pagination, filters, permissions
 
 from . import serializers
 from . import models as preferences_models
@@ -41,7 +41,7 @@ class PreferenceFilter(df_filters.FilterSet):
     expressed_at = df_filters.IsoDateTimeFromToRangeFilter(field_name='expressed_at')
 
 
-class PreferenceListView(generics.ListAPIView):
+class PreferenceListView(generics.ListCreateAPIView):
     """
     List all user preferences.
 
@@ -59,4 +59,5 @@ class PreferenceListView(generics.ListAPIView):
     ordering = ('-expressed_at', '-user__username')
     ordering_fields = ('expressed_at',)
     pagination_class = ListPagination
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     serializer_class = serializers.PreferenceSerializer

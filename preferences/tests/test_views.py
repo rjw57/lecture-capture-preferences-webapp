@@ -1,8 +1,9 @@
 import datetime
+import itertools
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
-from django.utils import dateparse
+from django.utils import dateparse, timezone
 from furl import furl
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APIRequestFactory, force_authenticate
@@ -143,6 +144,47 @@ class PreferenceListViewTestCase(ViewTestCase):
         self.assertEqual(len(results), expected_prefs.count())
         for pref_dict, pref in zip(results, expected_prefs):
             self._assert_preference_dict_matches(pref_dict, pref)
+
+    def test_creation(self):
+        """POST-ing preferences updates preferences for user"""
+        for allow_capture, request_hold in itertools.product([True, False], [True, False]):
+            # Update user preference
+            request = self.factory.post('/', {
+                'allow_capture': allow_capture, 'request_hold': request_hold
+            })
+            force_authenticate(request, user=self.user)
+            response = self.view(request)
+            self.assertEqual(response.status_code, 201)  # created
+
+            # Most recent preference is updated
+            pref = self.most_recent_qs.filter(user=self.user).first()
+            self.assertIsNotNone(pref)
+            self.assertEqual(pref.allow_capture, allow_capture)
+            self.assertEqual(pref.request_hold, request_hold)
+
+    def test_anonymous_creation(self):
+        """POST-ing preferences updates preferences for anonymous user fails"""
+        request = self.factory.post('/', {
+            'allow_capture': True, 'request_hold': False
+        })
+        response = self.view(request)
+        self.assertEqual(response.status_code, 403)  # Forbidden
+
+    def test_creation_ignores_expressed_at(self):
+        """POST-ing preferences updates preferences for user and ignores any expressed_at"""
+        # Update user preference
+        expressed_at_request = timezone.now() - datetime.timedelta(days=34)
+        request = self.factory.post('/', {
+            'allow_capture': True, 'request_hold': False,
+            'expressed_at': expressed_at_request.isoformat()
+        })
+        force_authenticate(request, user=self.user)
+        prev_pref = self.most_recent_qs.filter(user=self.user).first()
+        response = self.view(request)
+        self.assertEqual(response.status_code, 201)  # created
+        pref = self.most_recent_qs.filter(user=self.user).first()
+        self.assertNotEqual(prev_pref.id, pref.id)
+        self.assertNotEqual(pref.expressed_at, expressed_at_request)
 
     def _assert_preference_dict_matches(self, pref_dict, pref):
         """
