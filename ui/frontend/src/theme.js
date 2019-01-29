@@ -9,12 +9,6 @@
 
 import { createMuiTheme } from '@material-ui/core/styles';
 
-const defaultTheme = createMuiTheme();
-
-const serifFont = {
-  fontFamily: ['"Merriweather"', 'serif'],
-};
-
 const theme = createMuiTheme({
   // This palette was designed using the material palette design tool and University style
   // guidelines:
@@ -35,20 +29,6 @@ const theme = createMuiTheme({
     },
     background: {
       default: '#f3f3f3',
-    },
-  },
-  overrides: {
-    MuiTypography: {
-      display1: { ...serifFont },
-      display2: { ...serifFont },
-      display3: { ...serifFont },
-      display4: { ...serifFont },
-      headline: { ...serifFont },
-      title: { ...serifFont },
-    },
-
-    MediaItemCard: {
-      title: { ...serifFont },
     },
   },
 });
